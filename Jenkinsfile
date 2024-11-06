@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('Prepare Environment') {
             steps {
-                checout scm
+                checkout scm
             }
         }
 
