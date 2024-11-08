@@ -1,5 +1,6 @@
 pipeline {
     agent any
+
     options {
         skipDefaultCheckout(true)
         timestamps()
@@ -31,7 +32,7 @@ pipeline {
                 script {
                     // Use withCredentials to securely access Docker Hub credentials
                     withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        bat "echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin"
+                        bat "docker login -u %DOCKER_USERNAME% --password %DOCKER_PASSWORD%"
                         bat "docker push %DOCKER_IMAGE%:%DOCKER_TAG%"
                     }
                 }
@@ -47,20 +48,9 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Stop Services') {
             steps {
                 script {
-                    // Optionally, you can add commands to test your application here
-                    echo 'Running tests...'
-                }
-            }
-        }
-
-        stage('Cleanup') {
-            steps {
-                script {
-                    // Optionally, clean up containers or resources after the build
-                    echo 'Cleaning up...'
                     bat 'docker-compose down'
                 }
             }
