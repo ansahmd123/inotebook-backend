@@ -28,9 +28,9 @@ pipeline {
 
         stage('Push to Docker Hub') {
             steps {
-                script {
+                node {
                     // Use withCredentials to securely access Docker Hub credentials
-                    withCredentials([usernameColonPassword(credentialsId: 'docker-credentials', variable: 'DOCKER_USERNAME', variable: 'DOCKER_PASSWORD')]) {
+                    withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         bat "echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin"
                         bat "docker push %DOCKER_IMAGE%:%DOCKER_TAG%"
                     }
