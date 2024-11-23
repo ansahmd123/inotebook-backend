@@ -22,7 +22,7 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image
-                    bat 'docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% .'
+                    sh 'docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} .'
                 }
             }
         }
@@ -32,8 +32,8 @@ pipeline {
                 script {
                     // Use withCredentials to securely access Docker Hub credentials
                     withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        bat "docker login -u %DOCKER_USERNAME% --password %DOCKER_PASSWORD%"
-                        bat "docker push %DOCKER_IMAGE%:%DOCKER_TAG%"
+                        sh "docker login -u ${DOCKER_USERNAME} --password-stdin <<< ${DOCKER_PASSWORD}"
+                        sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
                     }
                 }
             }
@@ -43,7 +43,7 @@ pipeline {
             steps {
                 script {
                     // Run the Docker Compose command to start the containers
-                    bat 'docker-compose up -d --build'
+                    sh 'docker-compose up -d --build'
                 }
             }
         }
@@ -51,7 +51,7 @@ pipeline {
         stage('Stop Services') {
             steps {
                 script {
-                    bat 'docker-compose down'
+                    sh 'docker-compose down'
                 }
             }
         }
