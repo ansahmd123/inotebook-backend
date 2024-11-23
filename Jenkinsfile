@@ -32,8 +32,10 @@ pipeline {
                 script {
                     // Use withCredentials to securely access Docker Hub credentials
                     withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh "docker login -u ${DOCKER_USERNAME} --password-stdin <<< ${DOCKER_PASSWORD}"
-                        sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                        sh '''
+                            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+                            docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
+                        '''
                     }
                 }
             }
